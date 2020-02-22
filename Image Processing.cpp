@@ -54,6 +54,30 @@ int main()
 	im->restoreToOriginal();
 	im->adjustContrast(-100);
 	im->write("images/contrast-100.bmp");
+
+	im->restoreToOriginal();
+	im->averagingFilter(3);
+	im->write("images/averagingFilter-3.bmp");
+
+	/*im->restoreToOriginal();
+	im->averagingFilter(7);
+	im->write("images/averagingFilter-7.bmp");
+
+	im->restoreToOriginal();
+	im->averagingFilter(15);
+	im->write("images/averagingFilter-15.bmp");*/
+
+	im->restoreToOriginal();
+	im->medianFilter(3);
+	im->write("images/medianFilter-3.bmp");
+
+	/*im->restoreToOriginal();
+	im->medianFilter(7);
+	im->write("images/medianFilter-7.bmp");
+
+	im->restoreToOriginal();
+	im->medianFilter(15);
+	im->write("images/medianFilter-15.bmp");*/
 	return 0;
 }
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include <fstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -203,8 +204,6 @@ void ImageManager::adjustBrightness(int brightness)
 	}
 }
 
-// Negative image
-// s = L − 1 − r
 void ImageManager::invert()
 {
 	for (int y = 0; y < (*height); y++)
@@ -225,8 +224,6 @@ void ImageManager::invert()
 	}
 }
 
-// Log Transformation
-// s = c log (1 + r)
 void ImageManager::LogTransformation()
 {
 	for (int y = 0; y < (*height); y++)
@@ -250,8 +247,6 @@ void ImageManager::LogTransformation()
 	}
 }
 
-// Power-Law
-// s = cr^γ
 void ImageManager::PowerLawTransformation(double gamma)
 {
 	for (int y = 0; y < (*height); y++)
@@ -378,4 +373,175 @@ void ImageManager::adjustContrast(int contrast)
 			setRGB(x, y, color);
 		}
 	}
+}
+
+void ImageManager::averagingFilter(int size)
+{
+	if (size % 2 == 0)
+	{
+		cout << "Size Invalid: must be odd number!" << endl;
+		return;
+	}
+	int* tempBuf = new int[(*height) * (*width)];
+	for (int y = 0; y < (*height); y++)
+	{
+		for (int x = 0; x < (*width); x++)
+		{
+			int sumRed = 0, sumGreen = 0, sumBlue = 0;
+			for (int i = y - size / 2; i <= y + size / 2; i++)
+			{
+				for (int j = x - size / 2; j <= x + size / 2; j++)
+				{
+					if (i >= 0 && i < (*height) && j >= 0 && j < (*width))
+					{
+						int color = getRGB(j, i);
+						int r = (color >> 16) & 0xff;
+						int g = (color >> 8) & 0xff;
+						int b = color & 0xff;
+						sumRed += r;
+						sumGreen += g;
+						sumBlue += b;
+					}
+				}
+			}
+			sumRed /= (size * size);
+			sumRed = sumRed > 255 ? 255 : sumRed;
+			sumRed = sumRed < 0 ? 0 : sumRed;
+			sumGreen /= (size * size);
+			sumGreen = sumGreen > 255 ? 255 : sumGreen;
+			sumGreen = sumGreen < 0 ? 0 : sumGreen;
+			sumBlue /= (size * size);
+			sumBlue = sumBlue > 255 ? 255 : sumBlue;
+			sumBlue = sumBlue < 0 ? 0 : sumBlue;
+			int newColor = (sumRed << 16) | (sumGreen << 8) | sumBlue;
+			tempBuf[y * (*width) + x] = newColor;
+		}
+	}
+	for (int y = 0; y < (*height); y++)
+	{
+		for (int x = 0; x < (*width); x++)
+		{
+			setRGB(x, y, tempBuf[y * (*width) + x]);
+		}
+	}
+	delete[] tempBuf;
+}
+
+void ImageManager::averagingFilterWithShape(int size, int k)
+{
+	if (size % 2 == 0)
+	{
+		cout << "Size Invalid: must be odd number!" << endl;
+		return;
+	}
+	int* tempBuf = new int[(*height) * (*width)];
+	for (int y = 0; y < (*height); y++)
+	{
+		for (int x = 0; x < (*width); x++)
+		{
+			int sumRed = 0, sumGreen = 0, sumBlue = 0;
+			for (int i = y - size / 2; i <= y + size / 2; i++)
+			{
+				for (int j = x - size / 2; j <= x + size / 2; j++)
+				{
+					if (i >= 0 && i < (*height) && j >= 0 && j < (*width))
+					{
+						int color = getRGB(j, i);
+						int r = (color >> 16) & 0xff;
+						int g = (color >> 8) & 0xff;
+						int b = color & 0xff;
+						sumRed += r;
+						sumGreen += g;
+						sumBlue += b;
+					}
+				}
+			}
+			sumRed /= (size * size);
+			sumRed = sumRed > 255 ? 255 : sumRed;
+			sumRed = sumRed < 0 ? 0 : sumRed;
+			sumGreen /= (size * size);
+			sumGreen = sumGreen > 255 ? 255 : sumGreen;
+			sumGreen = sumGreen < 0 ? 0 : sumGreen;
+			sumBlue /= (size * size);
+			sumBlue = sumBlue > 255 ? 255 : sumBlue;
+			sumBlue = sumBlue < 0 ? 0 : sumBlue;
+			int newColor = (sumRed << 16) | (sumGreen << 8) | sumBlue;
+			tempBuf[y * (*width) + x] = newColor;
+		}
+	}
+	for (int y = 0; y < (*height); y++)
+	{
+		for (int x = 0; x < (*width); x++)
+		{
+			setRGB(x, y, tempBuf[y * (*width) + x]);
+		}
+	}
+	delete[] tempBuf;
+}
+
+void ImageManager::medianFilter(int size)
+{
+	if (size % 2 == 0)
+	{
+		cout << "Size Invalid: must be odd number!" << endl;
+		return;
+	}
+	int* tempBuf = new int[(*height) * (*width)];
+	for (int y = 0; y < (*height); y++)
+	{
+		for (int x = 0; x < (*width); x++)
+		{
+			int arraySize = size * size;
+			int* arrayRed = new int[arraySize];
+			int* arrayGreen = new int[arraySize];
+			int* arrayBlue = new int[arraySize];
+			int sumRed = 0, sumGreen = 0, sumBlue = 0;
+			int index = 0;
+			for (int i = y - size / 2; i <= y + size / 2; i++)
+			{
+				for (int j = x - size / 2; j <= x + size / 2; j++)
+				{
+					if (i >= 0 && i < (*height) && j >= 0 && j < (*width))
+					{
+						int color = getRGB(j, i);
+						int r = (color >> 16) & 0xff;
+						int g = (color >> 8) & 0xff;
+						int b = color & 0xff;
+						arrayRed[index] = r;
+						arrayGreen[index] = g;
+						arrayBlue[index] = b;
+						index++;
+					}
+				}
+			}
+			sort(arrayRed, arrayRed + size * size);
+			sort(arrayGreen, arrayGreen + size * size);
+			sort(arrayBlue, arrayBlue + size * size);
+
+			int centerNumber = (size / 2) + 1;
+
+			sumRed = arrayRed[centerNumber];
+			sumRed = sumRed > 255 ? 255 : sumRed;
+			sumRed = sumRed < 0 ? 0 : sumRed;
+			sumGreen = arrayGreen[centerNumber];
+			sumGreen = sumGreen > 255 ? 255 : sumGreen;
+			sumGreen = sumGreen < 0 ? 0 : sumGreen;
+			sumBlue = arrayBlue[centerNumber];
+			sumBlue = sumBlue > 255 ? 255 : sumBlue;
+			sumBlue = sumBlue < 0 ? 0 : sumBlue;
+			int newColor = (sumRed << 16) | (sumGreen << 8) | sumBlue;
+			tempBuf[y * (*width) + x] = newColor;
+			delete[] arrayRed;
+			delete[] arrayGreen;
+			delete[] arrayBlue;
+		}
+	}
+	for (int y = 0; y < (*height); y++)
+	{
+		for (int x = 0; x < (*width); x++)
+		{
+			setRGB(x, y, tempBuf[y * (*width) + x]);
+		}
+	}
+	delete[] tempBuf;
 }

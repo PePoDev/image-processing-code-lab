@@ -27,6 +27,9 @@ public:
 	void writeHistogramToCSV(int* histogram, const char* fileName);
 	float getContrast();
 	void adjustContrast(int contrast);
+	void averagingFilter(int size);
+	void averagingFilterWithShape(int size, int k);
+	void medianFilter(int size);
 	int* width;
 	int* height;
 	int* bitDepth;
