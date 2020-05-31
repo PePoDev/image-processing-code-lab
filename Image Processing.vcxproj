@@ -72,6 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>BarCode128</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -147,7 +148,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Image Processing.cpp" />
+    <ClCompile Include="BarCode128.cpp" />
+    <ClCompile Include="Lab.cpp" />
     <ClCompile Include="ImageManager.cpp" />
   </ItemGroup>
   <ItemGroup>

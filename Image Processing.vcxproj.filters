@@ -15,10 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Image Processing.cpp">
+    <ClCompile Include="ImageManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageManager.cpp">
+    <ClCompile Include="BarCode128.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
